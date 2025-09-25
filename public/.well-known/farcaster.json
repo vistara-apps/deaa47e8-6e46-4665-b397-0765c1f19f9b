@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "MemeCoin Mania",
+    "subtitle": "Built with Zara",
+    "description": "MemeCoin Mania is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app",
+    "splashImageUrl": "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app/image.png",
+    "tagline": "MemeCoin Mania",
+    "screenshotUrls": [
+      "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app/screenshot.png",
+      "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://deaa47e86e464665b3970765c1f19f9b-z1il.vercel.app/api/webhook"
+  }
+}
