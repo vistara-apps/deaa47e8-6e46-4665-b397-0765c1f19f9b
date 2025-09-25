@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId            String   @id @default(cuid())
+  farcasterId       String?
+  walletAddress     String   @unique
+  memeCoinBalance   Float    @default(0)
+  badges            String   // JSON string for array
+  leaderboardRank   Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  memes       Meme[]       @relation("UserMemes")
+  engagements Engagement[] @relation("UserEngagements")
+
+  @@map("users")
+}
+
+model Meme {
+  memeId             String   @id @default(cuid())
+  creatorId          String
+  imageUrl           String
+  textPrompt         String
+  topic              String
+  upvotes            Int      @default(0)
+  shares             Int      @default(0)
+  creationTimestamp  DateTime @default(now())
+  mintedAsNft        Boolean  @default(false)
+  nftContractAddress String?
+  nftTokenId         String?
+
+  // Relations
+  creator     User        @relation("UserMemes", fields: [creatorId], references: [userId])
+  engagements Engagement[] @relation("MemeEngagements")
+
+  @@map("memes")
+}
+
+model Engagement {
+  engagementId String   @id @default(cuid())
+  userId       String
+  memeId       String
+  type         String   // 'upvote', 'comment', 'share'
+  timestamp    DateTime @default(now())
+  commentText  String?
+
+  // Relations
+  user User @relation("UserEngagements", fields: [userId], references: [userId])
+  meme Meme @relation("MemeEngagements", fields: [memeId], references: [memeId])
+
+  @@map("engagements")
+}
+
+model Trend {
+  trendId     String   @id @default(cuid())
+  keyword     String   @unique
+  frequency   Int      @default(0)
+  lastUpdated DateTime @updatedAt
+
+  @@map("trends")
+}
+
