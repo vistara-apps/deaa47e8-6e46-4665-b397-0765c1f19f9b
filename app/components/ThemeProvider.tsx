@@ -1,65 +1,49 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'default' | 'celo' | 'solana' | 'base' | 'coinbase'
+type Theme = 'default' | 'celo' | 'solana' | 'base' | 'coinbase';
 
-type ThemeProviderProps = {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
+interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 }
 
-type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const initialState: ThemeProviderState = {
-  theme: 'default',
-  setTheme: () => null,
-}
-
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
-
-export function ThemeProvider({
-  children,
-  defaultTheme = 'default',
-  storageKey = 'zara-theme',
-  ...props
-}: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage?.getItem(storageKey) as Theme) || defaultTheme
-  )
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>('default');
 
   useEffect(() => {
-    const root = window.document.documentElement
+    // Get theme from URL params or localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlTheme = urlParams.get('theme') as Theme;
+    const savedTheme = localStorage.getItem('theme') as Theme;
+    
+    const initialTheme = urlTheme || savedTheme || 'default';
+    setTheme(initialTheme);
+    
+    // Apply theme to document
+    document.documentElement.setAttribute('data-theme', initialTheme);
+  }, []);
 
-    root.classList.remove('default', 'celo', 'solana', 'base', 'coinbase')
-
-    root.classList.add(theme)
-  }, [theme])
-
-  const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage?.setItem(storageKey, theme)
-      setTheme(theme)
-    },
-  }
+  const handleSetTheme = (newTheme: Theme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeContext.Provider value={{ theme, setTheme: handleSetTheme }}>
       {children}
-    </ThemeProviderContext.Provider>
-  )
+    </ThemeContext.Provider>
+  );
 }
 
-export const useTheme = () => {
-  const context = useContext(ThemeProviderContext)
-
-  if (context === undefined)
-    throw new Error('useTheme must be used within a ThemeProvider')
-
-  return context
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
 }
